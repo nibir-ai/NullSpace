@@ -1,23 +1,55 @@
 "use client";
 
 import { useState } from "react";
-import { Menu, Search, Plus, FileText, Database, Calendar, Settings } from "lucide-react";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Placeholder from "@tiptap/extension-placeholder";
+import { Menu, Search, Plus, FileText, Database, Calendar, Settings, GripVertical } from "lucide-react";
 
 export default function Home() {
   const [sidebarOpen] = useState(true);
   const [pageTitle, setPageTitle] = useState("Welcome to Nothing • Notion");
 
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Placeholder.configure({
+        placeholder: "Type / for commands or just start typing…",
+      }),
+    ],
+    content: `
+      <h1>Welcome to Nothing • Notion</h1>
+      <p>Every block is styled exactly like Nothing OS — pure black, red accents, minimal lines.</p>
+      <ul>
+        <li>Blocks feel alive</li>
+        <li>Red hover glows</li>
+        <li>Zero bloat</li>
+      </ul>
+    `,
+    editorProps: {
+      attributes: {
+        class: "prose prose-invert max-w-none focus:outline-none text-lg leading-relaxed text-nothing-text min-h-[400px]",
+      },
+    },
+    // 🔥 THIS FIXES THE SSR ERROR
+    immediatelyRender: false,
+  });
+
+  // Simple floating + button to insert blocks
+  const insertBlock = (type: string) => {
+    if (!editor) return;
+    editor.chain().focus().insertContent(`<${type}>New ${type} block</${type}>`).run();
+  };
+
   return (
     <div className="flex h-screen bg-nothing-bg text-nothing-text">
-      {/* SIDEBAR - Nothing OS style */}
+      {/* SIDEBAR - unchanged, pure Nothing OS */}
       <div className={`w-72 border-r border-nothing-border bg-nothing-panel flex flex-col transition-all ${sidebarOpen ? 'translate-x-0' : '-translate-x-72'}`}>
-        {/* Header */}
         <div className="h-14 border-b border-nothing-border flex items-center px-4 gap-3">
           <div className="w-8 h-8 bg-nothing-accent rounded-xl flex items-center justify-center text-white text-xl font-bold">N</div>
           <span className="font-semibold tracking-tighter text-2xl">Nothing</span>
         </div>
 
-        {/* Search */}
         <div className="px-4 pt-4">
           <div className="flex items-center gap-2 bg-black border border-nothing-border rounded-2xl px-4 h-10 text-sm">
             <Search size={18} />
@@ -25,7 +57,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Navigation */}
         <div className="flex-1 px-3 py-2 overflow-y-auto nothing-scroll">
           <div className="space-y-1">
             <div className="flex items-center gap-3 px-3 py-2.5 hover:bg-nothing-border rounded-2xl text-sm cursor-pointer">
@@ -43,7 +74,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Footer */}
         <div className="p-4 border-t border-nothing-border flex items-center justify-between text-sm">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 bg-gray-800 rounded-full"></div>
@@ -56,7 +86,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* MAIN CONTENT AREA */}
+      {/* MAIN CONTENT */}
       <div className="flex-1 flex flex-col">
         {/* Top bar */}
         <div className="h-14 border-b border-nothing-border flex items-center px-6 justify-between">
@@ -75,10 +105,10 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Canvas - the "Notion" editor area */}
+        {/* Canvas */}
         <div className="flex-1 p-12 max-w-4xl mx-auto w-full overflow-y-auto nothing-scroll">
-          <div className="max-w-3xl mx-auto">
-            {/* FIXED: No React children conflict + suppress warning */}
+          <div className="max-w-3xl mx-auto relative">
+            {/* Page Title */}
             <div
               className="text-5xl font-light tracking-tighter mb-8 focus:outline-none"
               contentEditable
@@ -88,9 +118,20 @@ export default function Home() {
               {pageTitle}
             </div>
 
-            <div className="prose prose-invert max-w-none text-lg leading-relaxed">
-              <p className="text-nothing-muted">Start typing… everything is already Nothing OS themed.</p>
-              <p>This is the foundation. Every element (buttons, sidebar, text, accents) is locked to the exact Nothing OS palette.</p>
+            {/* Tiptap Editor - Nothing OS blocks */}
+            <div className="relative group">
+              {/* Floating + button (Nothing style) */}
+              <div className="absolute -left-12 top-3 opacity-0 group-hover:opacity-100 transition-opacity flex items-center">
+                <button
+                  onClick={() => insertBlock("p")}
+                  className="w-8 h-8 flex items-center justify-center text-nothing-muted hover:text-nothing-accent hover:bg-nothing-border rounded-2xl"
+                >
+                  <Plus size={22} />
+                </button>
+                <GripVertical size={18} className="text-nothing-muted ml-1" />
+              </div>
+
+              <EditorContent editor={editor} className="ProseMirror" />
             </div>
           </div>
         </div>

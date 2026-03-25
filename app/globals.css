@@ -17,3 +17,42 @@ body {
 .nothing-scroll::-webkit-scrollbar {
   display: none;
 }
+
+/* Tiptap Nothing OS block styling */
+.ProseMirror {
+  outline: none;
+  padding: 0;
+}
+
+.ProseMirror p {
+  margin-bottom: 0.75em;
+  line-height: 1.7;
+}
+
+.ProseMirror h1, .ProseMirror h2, .ProseMirror h3 {
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5em;
+}
+
+.ProseMirror h1 { font-size: 2.75rem; }
+.ProseMirror h2 { font-size: 2rem; }
+.ProseMirror h3 { font-size: 1.5rem; }
+
+.ProseMirror ul, .ProseMirror ol {
+  margin-bottom: 0.75em;
+  padding-left: 1.5em;
+}
+
+.ProseMirror blockquote {
+  border-left: 3px solid #D71921;
+  padding-left: 1rem;
+  color: #A0A0A0;
+  font-style: italic;
+}
+
+/* Selected block glow - Nothing red */
+.ProseMirror .selected {
+  background-color: rgba(215, 25, 33, 0.1);
+  border-radius: 4px;
+}
